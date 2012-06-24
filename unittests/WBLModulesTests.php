@@ -40,7 +40,7 @@ require_once realpath(getShopBasePath() . '/modules/functions.php');
 /**
  * PHPUnit_Framework_TestCase implemetnation for adding and testing all unit tests from unit dir
  */
-class EOSNeoPayTests extends PHPUnit_Framework_TestCase
+class WBLModulesTests extends PHPUnit_Framework_TestCase
 {
     /**
      * Test suite
