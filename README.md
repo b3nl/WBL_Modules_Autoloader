@@ -17,7 +17,14 @@ The core overload WBL_Modules_UtilsObject is necessary for OXID >= 4.6.0.
 
 The Autoloader is 100% tested with unittests till 4.6.0.
 
+Licensing:
 
+WBL Konzept, Beerden und Lange GbR
+Luxemburger Straße 266
+50937 Köln
+Deutschland
+
+Copyright 2012 WBL Konzept, Beerden und Lange GbR
 
 This program is free software: you can redistribute it and/or modify 
 it under the terms of the GNU General Public License as published by
