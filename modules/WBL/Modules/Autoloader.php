@@ -9,11 +9,11 @@
 
 	if (!function_exists('wblNew')) {
 		/**
-		 * Adapter um das strtolower im OXID-Kern auszugleichen.
+		 * Adapter for overcoming the strtolower in the oxNew-core.
 		 * @author blange <code@wbl-konzept.de>
-		 * @param string $sFullClassName Der vollqualifizierte Klassenname.
+		 * @param string $sFullClassName Der full qualified class name
 		 * @return object
-		 * @throws oxSystemComponentException Falls die Klasse nicht gefunden wurde.
+		 * @throws oxSystemComponentException If the class is missing.
 		 */
 		function wblNew($sFullClassName) {
 			if (!class_exists($sFullClassName, false)) {
@@ -33,19 +33,19 @@
 	 */
 	class WBL_Modules_Autoloader {
 		/**
-		 * Die Standard-Dateiendung.
+		 * Standard file ending.
 		 * @var string
 		 */
 		const DEFAULT_FILE_ENDING = '.php';
 
 		/**
-		 * Mit diesem Dateicache-Key speichert OXID im Autoloader die Pfade.
+		 * Cache key for caching the found class paths.
 		 * @var string
 		 */
 		const FILE_CACHE_KEY = 'aEosNeoAutoloaderFilePaths';
 
 		/**
-		 * Lazy Loading fuer den Pfad-Cache von OXID.
+		 * Lazy Loading for the path cache.
 		 * @var void|array
 		 */
 		protected $mFilePaths = null;
@@ -57,25 +57,25 @@
 		protected $aCoreOverrides = array();
 
 		/**
-		 * Die moeglichen Dateiendungen einer Klassen/Interface-Datei (FIFO).
+		 * The possible file endings of a class/Interface-file (FIFO).
 		 * @var array
 		 */
 		protected $aFileEndings = array();
 
 		/**
-		 * Die Namespaces die gecheckt werden sollen.
+		 * The used namespaces.
 		 * @var array
 		 */
 		private $aNamespaces = array();
 
 		/**
-		 * Sollen die Pfade in einer Datei gecacht werden?
+		 * Should the paths be cached in a file.
 		 * @var bool
 		 */
 		protected $bWithFileCache = true;
 
 		/**
-		 * Der Basis-Ordner fuer die Includes.
+		 * The base dir for including the files.
 		 * @var string
 		 */
 		protected $sBaseDir = '';
@@ -98,9 +98,9 @@
 		} // function
 
 		/**
-		 * Fuegt einen Eintrag zum OXID-Cache fuer die Klasssenpfade hinzu.
-		 * @param  string $sClass Der vollqualifizierte Klassenname.
-		 * @param  string $sPath  Der volle Klassenpfad.
+		 * Adds an entry to the file cache.
+		 * @param  string $sClass The full qualified class name.
+		 * @param  string $sPath  the full path to the class.
 		 * @return WBL_Modules_Autoloader
 		 * @author blange <code@wbl-konzept.de>
 		 */
@@ -121,7 +121,7 @@
 		} // function
 
 		/**
-		 * Returnt die Namespaces die inkludiert werden sollen.
+		 * Returns the used namespaces
 		 * @return array
 		 * @author blange <code@wbl-konzept.de>
 		 */
@@ -130,7 +130,7 @@
 		} // function
 
 		/**
-		 * Returnt den Basis-Ordner fuer die Includes.
+		 * Returnt the base dir for the includes.
 		 * @author blange <code@wbl-konzept.de>
 		 * @return string
 		 */
@@ -143,7 +143,7 @@
 		} // function
 
 		/**
-		 * Returns the class names for overriden some core classes.
+		 * Returns the class names for overriding some core classes.
 		 * @author blange <code@wbl-konzept.de>
 		 * @return array
 		 */
@@ -165,8 +165,8 @@
 			$sClassPart = trim(str_replace(array('_', '\\'), DIRECTORY_SEPARATOR, $sClass));
 
 			/*
-			 * foreach und file_exists ist genauso schnell wie ein glob-Aufruf fuer unterschiedliche
-			 * Dateienden.
+			 * foreach und file_exists ist as fast as a glob-call for the different
+			 * file endings.
 			 */
 			foreach ($aEndings as $sEnding) {
 				if (is_readable($sPath = $sBaseDir . $sClassPart . $sEnding)) {
@@ -181,7 +181,7 @@
 		} // function
 
 		/**
-		 * Returnt die von OXID gecachten Dateipfade fuer Klassen.
+		 * Returns the cached class paths.
 		 * @return array
 		 * @author blange <code@wbl-konzept.de>
 		 */
@@ -203,7 +203,7 @@
 		} // function
 
 		/**
-		 * Returnt die moeglichen Dateiendungen (FIFO).
+		 * Returns the used file endings (FIFO).
 		 * @return array
 		 * @author b.lange <code@wbl-konzept.de>
 		 */
@@ -250,9 +250,9 @@
 		} // function
 
 		/**
-		 * Inkludiert die angeforderte Klasse wenn moeglich.
+		 * Includes the called class if possible.
 		 * @author blange <code@wbl-konzept.de>
-		 * @param  string $sClass Der vollqualifizierte Klassenname.
+		 * @param  string $sClass The full qualified class name.
 		 * @param  bool   $bWithFileCache Should the caching be temporarily be disabled?
 		 * @return bool
 		 */
@@ -273,8 +273,8 @@
 		} // function
 
 		/**
-		 * Liest den Pfad-Cache von OXID aus und inkludiert falls moeglich die entsprechende Datei.
-		 * @param  string $sClass Der vollqualifizierte Klassenname.
+		 * Tries to get the path from the caching and includes the file if possible.
+		 * @param  string $sClass The full qualified class name.
 		 * @return bool
 		 * @author blange <code@wbl-konzept.de>
 		 */
@@ -293,8 +293,8 @@
 		} // function
 
 		/**
-		 * Darf der Autoloader fuer diese Datei verwendete werden?
-		 * @param  string $sClass Der volle Klassenname.
+		 * Is the autoloader allowed to include the class?
+		 * @param  string $sClass The class or interface name.
 		 * @return bool
 		 * @author blange <code@wbl-konzept.de>
 		 */
@@ -302,17 +302,17 @@
 			return ($aNamespaces = $this->getAutoloaderNamespaces()) &&
 				// Ueberspringe *_parent-Classes
 				(strpos($sClass, '_parent') === false) &&
-				/*
-				 * Ueberspringe die Klasse, wenn der Namespace nicht stimmt. Normalerweise fuehrt
-				 * diese Kontrolle auch dazu, dass z.B. keine relativen Pfade erlaubt sind, auszer
-				 * der Admin konfiguriert den Admin-Loader entsprechend.
-				 */
+				 /*
+				  * Skips the class, if the namespaces does not match. The check does not allow
+				  * relative paths as well (or any other file include calling class_exists()),
+				  * as long as you say so
+				  */
 				(preg_match('/^(\\\\)?(' . implode('|', $aNamespaces) . ')(_|\\\\)/', $sClass));
 		} // function
 
 		/**
-		 * Laedt die Namespaces, die mit diesem Autoloader beachtet werden sollen.
-		 * @param  array $aNames Die Namespaces die beachtet werden sollen.
+		 * Sets the namespaces allowed for this autoloader.
+		 * @param  array $aNames 
 		 * @return WBL_Modules_Autoloader
 		 * @author blange <code@wbl-konzept.de>
 		 */
@@ -323,9 +323,9 @@
 		} // function
 
 		/**
-		 * Wechselt den Basis-Ordner fuer die Includes.
+		 * Sets the base dir for the includes.
 		 * @author blange <code@wbl-konzept.de>
-		 * @param  string $sDir Der entsprechende Ordner, Existenz wird nicht kontrolliert.
+		 * @param  string $sDir The path to an existing dir.
 		 * @return WBL_Modules_Autoloader
 		 */
 		public function setBaseDir($sDir) {
@@ -347,8 +347,8 @@
 		} // function
 
 		/**
-		 * Setzt die Dateiendungen die (FIFO) beachten werden sollen.
-		 * @param  array $aEndings Die moeglichen Dateiendungen.
+		 * Sets the fileendings (FIFO) matching this autoloader
+		 * @param  array $aEndings
 		 * @return WBL_Modules_Autoloader
 		 * @author blange <code@wbl-konzept.de>
 		 */
@@ -359,9 +359,9 @@
 		} // function
 
 		/**
-		 * Sollen die Pfade in einer Datei gecacht werden?
-		 * @param  bool $bNewState Der neue Status.
-		 * @return bool Der alte Status.
+		 * Should the found paths be cached in a file.
+		 * @param  bool $bNewState the new state.
+		 * @return bool The old state.
 		 * @author blange <code@wbl-konzept.de>
 		 */
 		public function withFileCaching($bNewState = false) {
