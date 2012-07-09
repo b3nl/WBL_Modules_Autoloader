@@ -97,7 +97,11 @@
 			$oConfig->setConfigParam('aModules', array('test' => '\WBL_Test_Dummy'));
 			unset($oConfig);
 
-			$this->oFixture->setWBLAutoloader($oMock = $this->getMock('WBL_Modules_Autoloader', array('isIncludeAllowed')));
+			$this->oFixture->setWBLAutoloader(
+				$oMock = $this->getMock('WBL_Modules_Autoloader', array('isIncludeAllowed'))
+			);
+
+			$oMock->setAutoloaderNamespaces(array('WBL'));
 
 			$oMock
 				->expects($this->once())
@@ -119,7 +123,9 @@
 		public function testGetDisabledModuleClassesStandardNoDisabledClasses() {
 			$this->oFixture = $this->getMock(get_class($this->oFixture), array('getDisabledModules'));
 
-			$this->oFixture->setWBLAutoloader($this->getMock('WBL_Modules_Autoloader'));
+			$this->oFixture->setWBLAutoloader($oLoader = new WBL_Modules_Autoloader());
+			$oLoader->setAutoloaderNamespaces(array('WBL'));
+			unset($oLoader);
 
 			$this->oFixture
 				->expects($this->exactly(2))
@@ -164,22 +170,6 @@
 				$this->oFixture->removeWBLModules(
 					array('oxmodulelist' => array('testmodule1/testmodule', 'WBL_Modules_Autoloader'))
 				)
-			);
-		} // function
-
-		/**
-		 * There should be no further action without a valid autoloader.
-		 * @author blange <code@wbl-konzept.de>
-		 * @return void
-		 */
-		public function testRemoveWBLModulesNoNamespaces() {
-			$this->oFixture = $this->getProxyClass(get_class($this->oFixture));
-
-			$this->oFixture->setWBLAutoloader($this->getMock('WBL_Modules_Autoloader'));
-
-			$this->assertEquals(
-				$aTest = array('oxmodulelist' => array('testmodule1/testmodule', 'WBL_Modules_Autoloader')),
-				$this->oFixture->removeWBLModules($aTest)
 			);
 		} // function
 	} // class
