@@ -171,7 +171,7 @@
 			 */
 			foreach ($aEndings as $sEnding) {
 				if (is_readable($sPath = $sBaseDir . $sClassPart . $sEnding)) {
-					$this->addToFileCache($sClass, $sPath);					
+					$this->addToFileCache($sClass, $sUsedPath = $sPath);					
 					break;
 				} // if
 			} // foreach
