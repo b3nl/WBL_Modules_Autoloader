@@ -64,4 +64,94 @@
 
 			$this->oFixture = null;
 		} // function
+
+		/**
+		 * The disabled module is part of the chain, because oxid can not unset it.
+		 * @author blange <code@wbl-konzept.de>
+		 * @return void
+		 */
+		public function testGetActiveModuleChainNoAutoloader() {
+			$this->oFixture = $this->getProxyClass(get_class($this->oFixture));
+			$this->oFixture->setNonPublicVar('mWBLAutoloader', null);
+
+			$oConfig = modConfig::getInstance();
+			$oConfig->setConfigParam('aDisabledModules', array('WBL_Test'));
+			$oConfig->setConfigParam('aModulePaths', array('WBL_Test' => 'WBL/Test', 'WBL_Test2' => 'WBL/Test2'));
+			unset($oConfig);
+
+
+			$this->assertSame(
+				$aModules = array('WBL_Test_Dummy', 'WBL_Test2_Dummy'),
+				$this->oFixture->_getActiveModuleChain($aModules)
+			);
+		} // function
+
+		/**
+		 * The module chain should not be changed.
+		 * @author blange <code@wbl-konzept.de>
+		 * @return void
+		 */
+		public function testGetActiveModuleChainNoDisabledClasses() {
+			$this->oFixture = $this->getProxyClass(get_class($this->oFixture));
+			$this->oFixture->setWBLAutoloader($oLoader = wblNew('WBL_Modules_Autoloader'));
+			modConfig::getInstance()->setConfigParam('aDisabledModules', array());
+
+			$oLoader->setAutoloaderNamespaces(array('WBL'));
+
+			$this->assertSame(
+				$aModules = array('WBL_Test_Dummy'),
+				$this->oFixture->_getActiveModuleChain($aModules)
+			);
+		} // function
+
+		/**
+		 * The parent should not be called, if the module logics removes all modules.
+		 * @author blange <code@wbl-konzept.de>
+		 * @return void
+		 */
+		public function testGetActiveModuleChainNoParentCall() {
+			$this->oFixture = $this->getProxyClass(get_class($this->oFixture));
+			$this->oFixture->setWBLAutoloader($oMock = $this->getMock('WBL_Modules_Autoloader', array('isIncludeAllowed')));
+
+			$oConfig = modConfig::getInstance();
+			$oConfig->setConfigParam('aDisabledModules', array('WBL_Test'));
+			$oConfig->setConfigParam('aModulePaths', array('WBL_Test' => 'WBL/Test'));
+			unset($oConfig);
+
+			$oMock
+				->expects($this->once())
+				->method('isIncludeAllowed')
+				->with($sClass = 'WBL_Test_Dummy')
+				->will($this->returnValue(true));
+			$oMock->setAutoloaderNamespaces(array('WBL'));
+			unset($oMock);
+
+			$this->assertSame(
+				array(),
+				$this->oFixture->_getActiveModuleChain(array($sClass))
+			);
+		} // function
+
+		/**
+		 * The parent call should be combined, with the module logics.
+		 * @author blange <code@wbl-konzept.de>
+		 * @return void
+		 */
+		public function testGetActiveModuleChainWithParentCall() {
+			$this->oFixture = $this->getProxyClass(get_class($this->oFixture));
+			$this->oFixture->setWBLAutoloader($oLoader = wblNew('WBL_Modules_Autoloader'));
+
+			$oConfig = modConfig::getInstance();
+			$oConfig->setConfigParam('aDisabledModules', array('WBL_Test'));
+			$oConfig->setConfigParam('aModulePaths', array('WBL_Test' => 'WBL/Test', 'WBL_Test2' => 'WBL/Test2'));
+			unset($oConfig);
+
+			$oLoader->setAutoloaderNamespaces(array('WBL'));
+			unset($oLoader);
+
+			$this->assertSame(
+				array(1 => $sClass2 = 'WBL_Test2_Dummy', 2 => $sClass3 = 'dir/module'),
+				$this->oFixture->_getActiveModuleChain(array('WBL_Test_Dummy', $sClass2, $sClass3))
+			);
+		} // function
 	} // class
