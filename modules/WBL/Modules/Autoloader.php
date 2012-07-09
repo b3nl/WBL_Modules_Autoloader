@@ -163,6 +163,7 @@
 			$aEndings   = $this->getFileEndings();
 			$sBaseDir   = $this->getBaseDir();
 			$sClassPart = trim(str_replace(array('_', '\\'), DIRECTORY_SEPARATOR, $sClass));
+			$sUsedPath  = '';
 
 			/*
 			 * foreach und file_exists ist as fast as a glob-call for the different
@@ -170,14 +171,13 @@
 			 */
 			foreach ($aEndings as $sEnding) {
 				if (is_readable($sPath = $sBaseDir . $sClassPart . $sEnding)) {
-					$this->addToFileCache($sClass, $sPath);
-					stopProfile($sMethod);
-
-					return $sPath;
+					$this->addToFileCache($sClass, $sPath);					
+					break;
 				} // if
 			} // foreach
 
-			return '';
+			stopProfile($sMethod);
+			return $sUsedPath;
 		} // function
 
 		/**
