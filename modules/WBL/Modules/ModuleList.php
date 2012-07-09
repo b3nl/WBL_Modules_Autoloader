@@ -33,7 +33,7 @@
 		public function getDeletedExtensions() {
 			$aDeletes = parent::getDeletedExtensions();
 
-			if ($aDeletes && $this->getWBLAutoloader()) {
+			if ($aDeletes && $this->withAutoloader()) {
 				$aDeletes = $this->removeWBLModules($aDeletes);
 			} // if
 
@@ -46,37 +46,36 @@
 		 * @return void
 		 */
 		public function getDisabledModuleClasses() {
-			$aParent = parent::getDisabledModuleClasses();
+			$aClasses = parent::getDisabledModuleClasses();
 
-			if (!$oAutoloader = $this->getWBLAutoloader()) {
-				return $aParent;
-			} // if
+			if ($this->withAutoloader() && ($aDisabledModules = $this->getDisabledModules()) &&
+				is_array($aDisabledModules))
+			{
+				$oAutoloader            = $this->getWBLAutoloader();
+				$aDisabledModuleClasses = array();
+				$aModules               = $this->getAllModules();
 
-			if (!(($aDisabledModules = $this->getDisabledModules()) && is_array($aDisabledModules))) {
-				return $aParent;
-			} // if
-
-			$aDisabledModuleClasses = array();
-			$aModules               = $this->getAllModules();
-
-			foreach ($aDisabledModules as $sId) {
-				foreach ($aModules as $sClass => $aModuleClasses) {
-					foreach ($aModuleClasses as $sModuleClass) {
-						/*
-						 * Module classes of the autoloader do not start with the dir, so the oxid comparison
-						 * with the dir ist not working. But the Modules of the autoloader must start
-						 * with the id, so use it with the autoloader.
-						 */
-						if (((strpos($sModuleClass, $sId) === 0) || (strpos($sModuleClass, "\\{$sId}") === 0)) &&
-							($oAutoloader->isIncludeAllowed($sModuleClass)))
-						{
-							$aDisabledModuleClasses[] = $sModuleClass;
-						} // if
+				foreach ($aDisabledModules as $sId) {
+					foreach ($aModules as $sClass => $aModuleClasses) {
+						foreach ($aModuleClasses as $sModuleClass) {
+							/*
+							 * Module classes of the autoloader do not start with the dir, so the oxid comparison
+							 * with the dir ist not working. But the Modules of the autoloader must start
+							 * with the id, so use it with the autoloader.
+							 */
+							if (((strpos($sModuleClass, $sId) === 0) || (strpos($sModuleClass, "\\{$sId}") === 0)) &&
+								($oAutoloader->isIncludeAllowed($sModuleClass)))
+							{
+								$aDisabledModuleClasses[] = $sModuleClass;
+							} // if
+						} // foreach
 					} // foreach
 				} // foreach
-			} // foreach
 
-			return array_unique(array_merge($aParent, $aDisabledModuleClasses));
+				$aClasses = array_unique(array_merge($aClasses, $aDisabledModuleClasses));
+			} // if
+
+			return $aClasses;
 		} // function
 
 		/**
@@ -85,23 +84,16 @@
 		 * @return WBL_Modules_Autoloader|void
 		 */
 		public function getWBLAutoloader() {
-			if ($this->mWBLAutoloader !== false) {
-				return $this->mWBLAutoloader;
+			if ($this->mWBLAutoloader === false) {
+				$this->mWBLAutoloader = null;
+
+				foreach (spl_autoload_functions() as $mCall) {
+					if (is_array($mCall) && (($mObject = reset($mCall)) instanceof WBL_Modules_Autoloader)) {
+						$this->setWBLAutoloader($mObject);
+						break; // makes the codecoverage more easy
+					} // if
+				} // foreach
 			} // if
-
-			$this->mWBLAutoloader = null;
-
-			foreach (spl_autoload_functions() as $mCall) {
-				if (!is_array($mCall)) {
-					continue;
-				} // if
-
-				if (($mObject = reset($mCall)) instanceof WBL_Modules_Autoloader)
-				{
-					$this->setWBLAutoloader($mObject);
-					break; // makes the codecoverage more easy
-				} // if
-			} // foreach
 
 			return $this->mWBLAutoloader;
 		} // function
@@ -113,13 +105,8 @@
 		 * @return array
 		 */
 		protected function removeWBLModules(array $aModules) {
-			if (!(($oAutoloader = $this->getWBLAutoloader()) &&
-				($oAutoloader->getAutoloaderNamespaces())))
-			{
-				return $aModules;
-			} // if
-
 			$aAllFiltered = array();
+			$oAutoloader  = $this->getWBLAutoloader();
 
 			foreach ($aModules as $sOXIDClass => $aClassModules) {
 				$aFiltered = array_filter($aClassModules, array($this, 'removeWBLModulesArrayFilter'));
@@ -162,5 +149,14 @@
 			unset($oAutoloader);
 
 			return $this;
+		} // function
+
+		/**
+		 * Is an autoloader used?
+		 * @author blange <code@wbl-konzept.de>
+		 * @return bool
+		 */
+		protected function withAutoloader() {
+			return ($oAutoloader = $this->getWBLAutoloader()) && $oAutoloader->getAutoloaderNamespaces();
 		} // function
 	} // class
