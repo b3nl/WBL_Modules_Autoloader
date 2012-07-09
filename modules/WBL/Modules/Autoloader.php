@@ -33,12 +33,6 @@
 	 */
 	class WBL_Modules_Autoloader {
 		/**
-		 * Standard file ending.
-		 * @var string
-		 */
-		const DEFAULT_FILE_ENDING = '.php';
-
-		/**
 		 * Cache key for caching the found class paths.
 		 * @var string
 		 */
@@ -79,6 +73,12 @@
 		 * @var string
 		 */
 		protected $sBaseDir = '';
+
+		/**
+		 * Standard file ending.
+		 * @var string
+		 */
+		const DEFAULT_FILE_ENDING = '.php';
 
 		/**
 		 * Adds a module overwriting the core (fifo).
@@ -186,17 +186,15 @@
 		 * @author blange <code@wbl-konzept.de>
 		 */
 		protected function getCachedClassPaths() {
-			if ($this->mFilePaths !== null) {
-				return $this->mFilePaths;
-			} // if
+			if ($this->mFilePaths === null) {
+				$this->mFilePaths = array();
 
-			$this->mFilePaths = array();
-
-			if (($this->withFileCaching()) &&
-				($mTemp = oxUtils::getInstance()->fromPhpFileCache(self::FILE_CACHE_KEY)) &&
-				(is_array($mTemp)))
-			{
-				$this->mFilePaths = $mTemp;
+				if (($this->withFileCaching()) &&
+					($mTemp = oxUtils::getInstance()->fromPhpFileCache(self::FILE_CACHE_KEY)) &&
+					(is_array($mTemp)))
+				{
+					$this->mFilePaths = $mTemp;
+				} // if
 			} // if
 
 			return $this->mFilePaths;
@@ -221,11 +219,9 @@
 		 *
 		 */
 		protected function handleCoreOverrides($sClass) {
-			if (!$aOverrides = array_change_key_case($this->getCoreOverrides(), CASE_LOWER)) {
-				return false;
-			} // if
+			$aOverrides = array_change_key_case($this->getCoreOverrides(), CASE_LOWER);
 
-			if (!array_key_exists($sClass = strtolower($sClass), $aOverrides)) {
+			if (!($aOverrides && array_key_exists($sClass = strtolower($sClass), $aOverrides))) {
 				return false;
 			} // if
 
@@ -279,17 +275,8 @@
 		 * @author blange <code@wbl-konzept.de>
 		 */
 		protected function includeClassFromCache($sClass) {
-			if (!$this->withFileCaching()) {
-				return false;
-			} // if
-
-			if (!$aPaths = $this->getCachedClassPaths()) {
-				return false;
-			} // if
-
-			return array_key_exists($sClass, $aPaths)
-				? (bool) require_once $aPaths[$sClass]
-				: false;
+			return $this->withFileCaching() && ($aPaths = $this->getCachedClassPaths()) &&
+				array_key_exists($sClass, $aPaths) && (bool) require_once $aPaths[$sClass];
 		} // function
 
 		/**
@@ -312,7 +299,7 @@
 
 		/**
 		 * Sets the namespaces allowed for this autoloader.
-		 * @param  array $aNames 
+		 * @param  array $aNames
 		 * @return WBL_Modules_Autoloader
 		 * @author blange <code@wbl-konzept.de>
 		 */
