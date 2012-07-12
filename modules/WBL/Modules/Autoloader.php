@@ -213,11 +213,12 @@
 			return $this->aFileEndings;
 		} // function
 
-		/**
-		 * Iterates through the override array, sets the aModules-Config temporarily and includes the core class itself.
-		 * @param string $sClass
-		 *
-		 */
+        /**
+         * Iterates through the override array, sets the aModules-Config temporarily and includes the core class itself.
+         * @author blange <code@wbl-konzept.de>
+         * @param string $sClass
+         * @return bool
+         */
 		protected function handleCoreOverrides($sClass) {
 			$aOverrides = array_change_key_case($this->getCoreOverrides(), CASE_LOWER);
 
