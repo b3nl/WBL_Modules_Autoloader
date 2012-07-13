@@ -5,7 +5,7 @@
 	spl_autoload_register(array(
 		$oAutoloader
 			->addCoreOverride('oxutilsobject', 'WBL_Modules_UtilsObject')
-			->setAutoloaderNamespaces(array('RS', 'WBL')),
+			->setAutoloaderNamespaces(array('WBL')),
 		'includeClass'
 	));
 	unset($oAutoloader);
