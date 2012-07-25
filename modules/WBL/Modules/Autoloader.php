@@ -20,7 +20,8 @@
 				spl_autoload_call($sFullClassName);
 			} // if
 
-			return call_user_func_array('oxNew', func_get_args());
+			$aParams = func_get_args();
+			return call_user_func_array('oxNew', $aParams);
 		} // function
 	} // if
 
@@ -171,7 +172,7 @@
 			 */
 			foreach ($aEndings as $sEnding) {
 				if (is_readable($sPath = $sBaseDir . $sClassPart . $sEnding)) {
-					$this->addToFileCache($sClass, $sUsedPath = $sPath);					
+					$this->addToFileCache($sClass, $sUsedPath = $sPath);
 					break;
 				} // if
 			} // foreach
@@ -213,12 +214,11 @@
 			return $this->aFileEndings;
 		} // function
 
-        /**
-         * Iterates through the override array, sets the aModules-Config temporarily and includes the core class itself.
-         * @author blange <code@wbl-konzept.de>
-         * @param string $sClass
-         * @return bool
-         */
+		/**
+		 * Iterates through the override array, sets the aModules-Config temporarily and includes the core class itself.
+		 * @param string $sClass
+		 *
+		 */
 		protected function handleCoreOverrides($sClass) {
 			$aOverrides = array_change_key_case($this->getCoreOverrides(), CASE_LOWER);
 
