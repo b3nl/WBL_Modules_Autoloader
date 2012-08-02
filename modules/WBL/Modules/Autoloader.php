@@ -89,11 +89,17 @@
 		 * @return WBL_Modules_Autoloader
 		 */
 		public function addCoreOverride($sCore, $sModule) {
+			$sCore = strtolower($sCore);
+
 			if (!array_key_exists($sCore, $this->aCoreOverrides)) {
-				$this->aCoreOverrides[$sCore] = array();
+				$this->aCoreOverrides[$sCore] = '';
 			} // if
 
-			$this->aCoreOverrides[$sCore][] = $sModule;
+			if ($this->aCoreOverrides[$sCore]) {
+				$this->aCoreOverrides[$sCore] .= '&';
+			} // if
+
+			$this->aCoreOverrides[$sCore] .= $sModule;
 
 			return $this;
 		} // function
@@ -148,7 +154,7 @@
 		 * @author blange <code@wbl-konzept.de>
 		 * @return array
 		 */
-		protected function getCoreOverrides() {
+		public function getCoreOverrides() {
 			return $this->aCoreOverrides;
 		} // function
 
@@ -229,19 +235,29 @@
 			$oConfig = oxConfig::getInstance();
 			$oConfig->setConfigParam(
 				'aModules',
+				// The "original" aModules overrides the hack if there are duplicate keys.
 				array_merge(
-					array($sClass => implode('&', $aModules = $aOverrides[$sClass])),
+					array($sClass => $sModules = $aOverrides[$sClass]),
 					$aOldValue = (array) $oConfig->getConfigParam('aModules')
 				)
 			);
 			oxAutoload($sClass);
+			unset($oConfig);
 
-			foreach ($aModules as $sModuleClass) {
+			foreach (explode('&', $sModules) as $sModuleClass) {
 				$this->includeClass($sModuleClass, false);
 			} // foreach
 
-			$oConfig->setConfigParam('aModules', $aOldValue);
-			unset($oConfig);
+			/*
+			 * The module "hacks" the Config-Array "aModules" only temporarily and only works,
+			 * till the oxconfig loads the module chain itself. The first oxSession-Usage in
+			 * oxConfig::getShopId uses the hacked chain, but the first instantiation comes after
+			 * the module chain is reloaded so the hack does not work, if we do not instantiate the
+			 * module here.
+			 */
+			if ($sClass === 'oxsession') {
+				oxSession::getInstance();
+			} // if
 
 			return true;
 		} // function

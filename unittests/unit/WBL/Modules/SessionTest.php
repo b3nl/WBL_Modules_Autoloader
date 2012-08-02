@@ -58,6 +58,7 @@
 		 * @return void
 		 */
 		public function testType() {
-			$this->assertType('WBL_Modules_Session', oxNew('oxsession'));
+			$this->assertType('WBL_Modules_Session', $oSession = oxNew('oxsession'));
+			$this->assertType('WBL_Modules_Session_parent', $oSession);
 		} // function
 	} // class

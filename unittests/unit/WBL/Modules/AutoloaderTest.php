@@ -47,8 +47,8 @@
 					'getCoreOverrides',
 					'addCoreOverride',
 					array(),
-					array($sClass = uniqid(), $sModule = uniqid()),
-					array($sClass => array($sModule))
+					array($sClass = 'Test', $sModule = uniqid()),
+					array('test' => $sModule)
 				),
 				array(
 					'getCoreOverrides',
@@ -88,7 +88,23 @@
 		} // function
 
 		/**
+		 * Checks if the overrides are added as strings.
+		 * @author blange <code@wbl-konzept.de>
+		 * @return void
+		 */
+		public function testAddAndGetMultipleCoreOverrides() {
+			$this->oFixture->addCoreOverride('oxsession', 'Test');
+			$this->oFixture->addCoreOverride('oxSession', 'Test1');
+
+			$this->assertSame(
+				array('oxsession' => 'Test&Test1'),
+				$this->oFixture->getCoreOverrides()
+			);
+		} // function
+
+		/**
 		 * Checks the constants.
+		 * @author blange <code@wbl-konzept.de>
 		 * @return void
 		 */
 		public function testConstants() {
@@ -146,7 +162,9 @@
 
 			$this->oFixture->includeClass($sDummy);
 			$this->assertTrue(class_exists('WBL_Modules_Test_Article', false), 'Existing check failed.');
-			$this->assertFalse(array_key_exists($sDummy, oxConfig::getInstance()->getConfigParam('aModules')), 'Config check failed.');
+			$this->assertTrue(
+				array_key_exists($sDummy, oxConfig::getInstance()->getConfigParam('aModules')), 'Config check failed.'
+			);
 		} // function
 
 		/**

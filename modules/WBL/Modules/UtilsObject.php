@@ -92,6 +92,48 @@
 		} // function
 
 		/**
+		 * (non-PHPdoc)
+		 *
+		 * Removes the "hacked" module config.
+		 * @see http/core/oxUtilsObject::oxNew()
+		 */
+		public function oxNew($sClassName) {
+			$aArgs = func_get_args();
+
+			$oObject = call_user_func_array(
+				version_compare(phpversion(), '5.3.0', '>=') ? 'parent::oxNew' : array('parent', 'oxNew'),
+				$aArgs
+			);
+
+			$this->removeCoreOverridesFromConfig($sClassName);
+
+			return $oObject;
+		} // function
+
+		/**
+		 * Removes the core overrides from the module class chain.
+		 * @author blange <code@wbl-konzept.de>
+		 * @param string $sClassName
+		 * @return void
+		 */
+		protected function removeCoreOverridesFromConfig($sClassName) {
+			$oLoader    = $this->getWBLAutoloader();
+			$sClassName = strtolower($sClassName);
+
+			if ($oLoader && (array_key_exists($sClassName, $aOverrides = $this->getWBLAutoloader()->getCoreOverrides()))) {
+				// oxconfig is loaded directly, so no need to check a special class name.
+				$aModules       = oxConfig::getInstance()->getConfigParam('aModules');
+				$sCoreOverrides = $aOverrides[$sClassName];
+
+				if (array_key_exists(strtolower($sClassName), $aModules)) {
+					$aModules[$sClassName] = str_replace($sCoreOverrides, '', $aModules[$sClassName]);
+
+					oxConfig::getInstance()->setConfigParam('aModules', array_filter($aModules));
+				} // if
+			} // if
+		} // function
+
+		/**
 		 * Sets the used autoloader.
 		 * @author blange <code@wbl-konzept.de>
 		 * @param WBL_Modules_Autoloader $oAutoloader

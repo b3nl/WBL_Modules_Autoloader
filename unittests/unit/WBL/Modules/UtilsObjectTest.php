@@ -154,4 +154,49 @@
 				$this->oFixture->_getActiveModuleChain(array('WBL_Test_Dummy', $sClass2, $sClass3))
 			);
 		} // function
+
+		/**
+		 * Checks the internal calls.
+		 * @author blange <code@wbl-konzept.de>
+		 * @expectedException RuntimeException
+		 * @return void
+		 */
+		public function testOxNewDelegation() {
+			$this->oFixture = $this->getMock(get_class($this->oFixture), array('removeCoreOverridesFromConfig'));
+
+			$this->oFixture
+				->expects($this->once())
+				->method('removeCoreOverridesFromConfig')
+				->with($sClass = 'oxSession')
+				->will($this->throwException(new RuntimeException()));
+
+			$this->oFixture->oxNew($sClass);
+		} // function
+
+		public function testRemoveCoreOverridesFromConfig() {
+			$this->oFixture = $this->getProxyClass(get_class($this->oFixture));
+
+			$this->oFixture->setWBLAutoloader($oAutoloader = new WBL_Modules_Autoloader());
+			$oAutoloader
+				->addCoreOverride('oxsession', 'Test')
+				->addCoreOverride('oxsession', 'Test1');
+			unset($oAutoloader);
+
+			modConfig::getInstance()->setConfigParam('aModules', array('oxsession' => 'Test3&Test&Test1'));
+			$this->oFixture->removeCoreOverridesFromConfig('oxSession');
+			$this->assertEquals(
+				array('oxsession' => 'Test3&'),
+				modConfig::getInstance()->getConfigParam('aModules')
+			);
+		} // function
+
+		/**
+		 * Checks the type of the class.
+		 * @author blange <b.lange@wbl-konzept.de>
+		 * @return void
+		 */
+		public function testType() {
+			$this->assertType('WBL_Modules_UtilsObject', $oClass = oxNew('oxutilsobject'));
+			$this->assertType('WBL_Modules_UtilsObject_parent', $oClass);
+		} // function
 	} // class
