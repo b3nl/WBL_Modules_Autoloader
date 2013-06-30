@@ -25,6 +25,8 @@
 		} // function
 	} // if
 
+	require_once realpath(dirname(__FILE__) . '/Helper/Singleton.php');
+
 	/**
 	 * Autoloader for module classes.
 	 * @author blange <code@wbl-konzept.de>

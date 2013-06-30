@@ -7,6 +7,7 @@
 	 * @subpackage oxAutoload
 	 * @version SVN: $Id$
 	 */
+	$sSysVersionForLoader  = current(explode('_', WBL_Modules_Helper_Singleton::getConfig()->getVersion()));
 	$sMetadataVersion      = '1.0';
 	$aWBLAutoloaderClasses = array(
 		'oxmodulelist' => 'WBL_Modules_ModuleList'
@@ -20,8 +21,14 @@
 		'WBL_Modules_UtilsObject'      => 'WBL/Modules/UtilsObject.php'
 	);
 
-	if (class_exists('oxRegistry', true)) {
-		$aWBLAutoloaderClasses['oxsession']     = 'WBL_Modules_Session';
+	// Fix for the session object, that can not provide a basket object.
+	if ((version_compare($sSysVersionForLoader, '4.7.0', '>=')) &&
+		((version_compare($sSysVersionForLoader, '4.7.6', '<')) || (version_compare($sSysVersionForLoader, '5.0.6', '<'))))
+	{
+		$aWBLAutoloaderClasses['oxsession']  = 'WBL_Modules_Session';
+	} // if
+
+	if ((version_compare($sSysVersionForLoader, '4.7.0', '>='))) {
 		$aWBLAutoloaderClasses['oxutilsobject'] = 'WBL_Modules_UtilsObject';
 	} // if
 
