@@ -135,7 +135,7 @@
 			$this->mFilePaths[$sClass] = $sPath;
 
 			if ($this->withFileCaching()) {
-				oxUtils::getInstance()->toPhpFileCache(
+				WBL_Modules_Helper_Singleton::getUtils()->toPhpFileCache(
 					self::FILE_CACHE_KEY,
 					array_merge(
 						$this->getCachedClassPaths(),
@@ -206,7 +206,7 @@
 				$this->mFilePaths = array();
 
 				if (($this->withFileCaching()) &&
-					($mTemp = oxUtils::getInstance()->fromPhpFileCache(self::FILE_CACHE_KEY)) &&
+					($mTemp = WBL_Modules_Helper_Singleton::getUtils()->fromPhpFileCache(self::FILE_CACHE_KEY)) &&
 					(is_array($mTemp)))
 				{
 					$this->mFilePaths = $mTemp;
@@ -277,7 +277,7 @@
 			if ((class_exists('\oxConfig', false)) && (class_exists('\oxModuleList', false)) &&
 				(class_exists('\WBL_Modules_ModuleList', false)))
 			{
-				$oConfig = class_exists('\oxRegistry', false) ? oxRegistry::getConfig() : oxConfig::getInstance();
+				$oConfig = WBL_Modules_Helper_Singleton::getConfig();
 				$sClass  = preg_replace('/^\\{1}/', '', $sClass);
 
 				if (($aModuleFiles = $oConfig->getConfigParam('aModuleFiles')) && is_array($aModuleFiles)) {
@@ -294,6 +294,7 @@
 						} // if
 					} // foreach
 				} // if
+				unset($oConfig);
 			} // if
 
 			stopProfile($sMethod);
@@ -321,7 +322,7 @@
 			if (($aOverrides && array_key_exists($sClass = strtolower($sClass), $aOverrides)) &&
 				(class_exists('oxConfig', false)) && (class_exists('oxUtilsObject', false)))
 			{
-				$oConfig = oxConfig::getInstance();
+				$oConfig = WBL_Modules_Helper_Singleton::getConfig();
 				$oConfig->setConfigParam(
 					'aModules',
 					// The "original" aModules overrides the hack if there are duplicate keys.
@@ -346,7 +347,7 @@
 				 * module here.
 				 */
 				if ($sClass === 'oxsession') {
-					oxSession::getInstance();
+					WBL_Modules_Helper_Singleton::getSession();
 				} // if
 
 				$bReturn = true;

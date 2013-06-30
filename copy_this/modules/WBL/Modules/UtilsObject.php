@@ -39,7 +39,7 @@
 				 * There is no config getter in oxUtilsObject since 4.7.0
 				 * ($aDisabledModules = $this->getConfig()->getConfigParam('aDisabledModules')) &&
 				 */
-				($aDisabledModules = oxConfig::getInstance()->getConfigParam('aDisabledModules')) &&
+				($aDisabledModules = WBL_Modules_Helper_Singleton::getConfig()->getConfigParam('aDisabledModules')) &&
 				(is_array($aDisabledModules)))) {
 				return parent::_getActiveModuleChain($aClassChain);
 			} // if
@@ -137,13 +137,13 @@
 
 			if ($oLoader && (array_key_exists($sClassName, $aOverrides = $this->getWBLAutoloader()->getCoreOverrides()))) {
 				// oxconfig is loaded directly, so no need to check a special class name.
-				$aModules       = oxConfig::getInstance()->getConfigParam('aModules');
+				$aModules       = WBL_Modules_Helper_Singleton::getConfig()->getConfigParam('aModules');
 				$sCoreOverrides = $aOverrides[$sClassName];
 
 				if (array_key_exists(strtolower($sClassName), $aModules)) {
 					$aModules[$sClassName] = str_replace($sCoreOverrides, '', $aModules[$sClassName]);
 
-					oxConfig::getInstance()->setConfigParam('aModules', array_filter($aModules));
+					WBL_Modules_Helper_Singleton::getConfig()->setConfigParam('aModules', array_filter($aModules));
 				} // if
 			} // if
 		} // function

@@ -20,8 +20,7 @@
 		'WBL_Modules_UtilsObject'      => 'WBL/Modules/UtilsObject.php'
 	);
 
-	if (version_compare(current(explode('_', oxConfig::getInstance()->getVersion())), '4.7.0', '>='))
-	{
+	if (class_exists('oxRegistry', true)) {
 		$aWBLAutoloaderClasses['oxsession']     = 'WBL_Modules_Session';
 		$aWBLAutoloaderClasses['oxutilsobject'] = 'WBL_Modules_UtilsObject';
 	} // if
