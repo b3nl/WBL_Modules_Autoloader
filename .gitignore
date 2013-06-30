@@ -1,0 +1,13 @@
+.idea/*
+!.idea/codeStyleSettings.xml
+!.idea/encodings.xml
+!.idea/php.xml
+!.idea/vcs.xml
+dev/app/Gemfile.lock
+eshop/config.inc.php
+eshop/.htaccess
+eshop/log/*.log
+eshop/out/pictures/generated/*
+eshop/tmp/*
+!eshop/tmp/.gitkeep
+
