@@ -41,7 +41,7 @@
          * Cache key for caching the found class paths.
          * @var string
          */
-        const FILE_CACHE_KEY = 'aEosNeoAutoloaderFilePaths';
+        const FILE_CACHE_KEY = 'aWBLAutoloaderFilePaths';
 
         /**
          * Lazy Loading for the path cache.
